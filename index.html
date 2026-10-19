@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Minecraft_Lite</title>
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #000; width: 100%; height: 100%; touch-action: none; }
+  canvas { display: block; position: absolute; left: 0; top: 0; image-rendering: pixelated; }
+  #gui { z-index: 2; }
+  #hiddenInput { position: absolute; left: -1000px; top: 0; opacity: 0; }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<canvas id="gui"></canvas>
+<input id="hiddenInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+<script src="dist/minecraft_lite.js"></script>
+</body>
+</html>
