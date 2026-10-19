@@ -160,7 +160,7 @@ export class Game {
     this.info = info;
     this.rules = info.rules;
     this.difficulty = info.difficulty;
-    const gen = new Generator(info.seed, { type: info.worldType, flatPreset: info.flatPreset, biome: info.singleBiome });
+    const gen = new Generator(info.seed, { type: info.worldType, flatPreset: info.flatPreset, biome: info.singleBiome, generateStructures: info.generateStructures });
     this.generator = gen;
     const world = new World(gen);
     this.world = world;
@@ -341,9 +341,11 @@ export class Game {
 
   // ------------------------------------------------------------------ chunk hooks
   onChunkLoaded(c) {
-    for (const be of c.blockEntities.values()) if (be instanceof FurnaceEntity || be.type === 'spawner') this.tickingBE.add(be);
+    for (const be of c.blockEntities.values()) if (be instanceof FurnaceEntity || be.type === 'spawner' || be.tick) this.tickingBE.add(be);
     if (c.savedEntities) { for (const e of c.savedEntities) this.loadEntity(e); c.savedEntities = null; c.hadEntities = true; }
     if (c.freshlyGenerated && this.rules && this.rules.doMobSpawning) this.spawner.populateChunk(c);
+    // mobs placed by world generation (e.g. villagers in villages)
+    if (c.pendingSpawns) { for (const s of c.pendingSpawns) { const m = this.spawnMob(s.type, s.x, s.y, s.z, { persistent: true, ...(s.opts || {}) }); if (m && s.init) s.init(m); } c.pendingSpawns = null; }
   }
   onChunkUnload(c) {
     for (const be of c.blockEntities.values()) this.tickingBE.delete(be);
@@ -514,6 +516,25 @@ export class Game {
     if (this.particles) for (let i = 0; i < 60; i++) this.particles.spawn('happy_villager', p.x + (Math.random() - 0.5) * 2, p.y + Math.random() * 2, p.z + (Math.random() - 0.5) * 2, 0, 0, 0);
     this.showTitle('', '§eTotem of Undying');
   }
+
+  // ---- feature packs: Game methods (open<Screen>(), helpers) inside your own region ----
+  // ==== pack:dimensions (Nether & End) ====
+  // ==== end pack:dimensions ====
+
+  // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+  // ==== end pack:enchanting ====
+
+  // ==== pack:structures (structures & loot) ====
+  // ==== end pack:structures ====
+
+  // ==== pack:trading (villager trading) ====
+  // ==== end pack:trading ====
+
+  // ==== pack:riding (riding & vehicles) ====
+  // ==== end pack:riding ====
+
+  // ==== pack:fishing (fish, fishing & ocean mobs) ====
+  // ==== end pack:fishing ====
 
   // ------------------------------------------------------------------ chat / messages
   chat(msg, color) {
@@ -818,8 +839,28 @@ export class Game {
     for (const be of this.tickingBE) {
       if (be instanceof FurnaceEntity) be.tick(w, be.x, be.y, be.z);
       else if (be.type === 'spawner') this.spawner.spawnerTick(be);
+      else if (be.tick) be.tick(w, be.x, be.y, be.z, this);
     }
     this.redstone.tick();
+    // ---- feature packs: per-tick hooks ----
+    // ==== pack:dimensions (Nether & End) ====
+    // ==== end pack:dimensions ====
+
+    // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+    // ==== end pack:enchanting ====
+
+    // ==== pack:structures (structures & loot) ====
+    // ==== end pack:structures ====
+
+    // ==== pack:trading (villager trading) ====
+    // ==== end pack:trading ====
+
+    // ==== pack:riding (riding & vehicles) ====
+    // ==== end pack:riding ====
+
+    // ==== pack:fishing (fish, fishing & ocean mobs) ====
+    // ==== end pack:fishing ====
+
     // entities
     for (let i = 0; i < this.entities.length; i++) {
       const e = this.entities[i];

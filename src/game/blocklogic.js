@@ -1,5 +1,6 @@
 // Block behaviour: placement states, interactions, support checks, gravity, fluids, random ticks, drops.
 import { BLOCKS, BLOCK } from '../registry/blocks.js';
+import { enchantLevel } from './enchantments.js';
 import { ITEM, itemOfBlock } from '../registry/items.js';
 import { ItemStack } from './itemstack.js';
 import { FACE_DIRS, HFACING_DIRS, MIN_Y, MAX_Y, Rng, SEA_LEVEL } from '../core/util.js';
@@ -339,7 +340,7 @@ export class BlockLogic {
     if (player && player.gameMode === 1) return;
     if (!this.canHarvest(def, stack)) return;
     const toolType = stack && stack.item.tool ? stack.item.tool.type : null;
-    const silk = stack && stack.tag && stack.tag.enchantments && stack.tag.enchantments['Silk Touch'];
+    const silk = enchantLevel(stack, 'silk_touch');
     const ctx = { rng: this.rng, toolType, silk };
     let drops;
     if (silk && (def.kind === 'ore' || def.name === 'glass' || def.kind === 'glass' || def.kind === 'pane' || def.name === 'ice' || def.name === 'grass_block' || def.name === 'bookshelf' || def.name === 'stone')) drops = [[def.name, 1]];
@@ -352,7 +353,7 @@ export class BlockLogic {
       const [name, a, b] = d;
       let n = b !== undefined ? a + this.rng.int(b - a + 1) : a;
       // fortune
-      const fortune = stack && stack.tag && stack.tag.enchantments && stack.tag.enchantments.Fortune;
+      const fortune = enchantLevel(stack, 'fortune');
       if (fortune && def.kind === 'ore') n *= 1 + Math.max(0, this.rng.int(fortune + 2) - 1);
       if (n > 0 && ITEM[name]) g.dropItem(x + 0.5, y + 0.5, z + 0.5, new ItemStack(name, n), { blockDrop: true });
     }
@@ -376,7 +377,7 @@ export class BlockLogic {
       else if (t.type === 'shears' && def.name.endsWith('_wool')) speed = 5;
       else if (t.type === 'sword' && def.kind === 'cobweb') speed = 15;
       else if (t.type === 'sword' && (def.kind === 'leaves' || def.name === 'pumpkin' || def.name === 'melon' || def.kind === 'vine' || def.name === 'cocoa')) speed = 1.5;
-      const eff = stack.tag && stack.tag.enchantments && stack.tag.enchantments.Efficiency;
+      const eff = enchantLevel(stack, 'efficiency');
       if (eff && speed > 1) speed += eff * eff + 1;
     }
     if (player.hasEffect('haste')) speed *= 1 + 0.2 * (player.effectAmp('haste') + 1);

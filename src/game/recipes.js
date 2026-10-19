@@ -365,6 +365,25 @@ function matches(spec, stack) {
 }
 
 // grid: array of ItemStack|null, size w*h
+// ---------------------------- feature packs ----------------------------
+// ==== pack:dimensions (Nether & End) ====
+// ==== end pack:dimensions ====
+
+// ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+// ==== end pack:enchanting ====
+
+// ==== pack:structures (structures & loot) ====
+// ==== end pack:structures ====
+
+// ==== pack:trading (villager trading) ====
+// ==== end pack:trading ====
+
+// ==== pack:riding (riding & vehicles) ====
+// ==== end pack:riding ====
+
+// ==== pack:fishing (fish, fishing & ocean mobs) ====
+// ==== end pack:fishing ====
+
 export function findRecipe(grid, w, h) {
   // bounding box of non-empty
   let x0 = w, y0 = h, x1 = -1, y1 = -1, n = 0;

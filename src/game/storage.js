@@ -5,6 +5,10 @@ import { FurnaceEntity, ChestEntity } from './inventory.js';
 import { ItemStack } from './itemstack.js';
 import { SECTIONS } from '../core/util.js';
 
+// Block-entity loaders registered by feature packs: BE_LOADERS[type] = (savedData) => blockEntity.
+// Any block entity with a save() method is serialized automatically; save() must include `type`.
+export const BE_LOADERS = {};
+
 const DB_NAME = 'minecraft_lite';
 const BLOCK_NAMES = BLOCKS.map((b) => b.name);
 
@@ -126,6 +130,7 @@ export class Storage {
       else if (b.type === 'chest') be = ChestEntity.load(b);
       else if (b.type === 'jukebox') be = { type: 'jukebox', disc: b.disc ? ItemStack.fromJSON(b.disc) : null };
       else if (b.type === 'spawner') be = { type: 'spawner', mob: b.mob, delay: 200 };
+      else if (BE_LOADERS[b.type]) be = BE_LOADERS[b.type](b);
       if (be) { be.x = b.x; be.y = b.y; be.z = b.z; c.blockEntities.set(c.beKey(b.x & 15, b.y, b.z & 15), be); }
     }
     c.savedEntities = d.entities && d.entities.length ? d.entities : null;

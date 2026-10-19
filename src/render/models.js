@@ -393,6 +393,25 @@ def('blaze', {
   paint: (s) => { s.fillBox([0, 0], [8, 8, 8], '#f6b201', 0.1, (f, x, y) => { if (f === 'front') { s.rect(x + 1, y + 3, 2, 1, '#3a1a00'); s.rect(x + 5, y + 3, 2, 1, '#3a1a00'); } }); s.fillBox([0, 16], [2, 8, 2], '#f8d040', 0.1); },
   flies: true, glow: true,
 });
+// ---------------------------- feature packs ----------------------------
+// ==== pack:dimensions (Nether & End) ====
+// ==== end pack:dimensions ====
+
+// ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+// ==== end pack:enchanting ====
+
+// ==== pack:structures (structures & loot) ====
+// ==== end pack:structures ====
+
+// ==== pack:trading (villager trading) ====
+// ==== end pack:trading ====
+
+// ==== pack:riding (riding & vehicles) ====
+// ==== end pack:riding ====
+
+// ==== pack:fishing (fish, fishing & ocean mobs) ====
+// ==== end pack:fishing ====
+
 // fallback generic biped for anything else
 def('generic', { tex: [64, 64], parts: () => biped({ hat: false }), paint: zombiePaint('#a0a0a0', '#606060', '#404040') });
 

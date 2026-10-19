@@ -6,6 +6,7 @@ import { BLOCKS, BLOCK } from '../registry/blocks.js';
 import { ITEM } from '../registry/items.js';
 import { BIOMES } from '../world/biomes.js';
 import { MIN_Y, SEA_LEVEL, titleCase } from '../core/util.js';
+import { enchantLevel } from '../game/enchantments.js';
 
 const SEEDS = ['wheat_seeds', 'melon_seeds', 'pumpkin_seeds', 'beetroot_seeds'];
 const MEATS = ['beef', 'cooked_beef', 'porkchop', 'cooked_porkchop', 'chicken', 'cooked_chicken', 'mutton', 'cooked_mutton', 'rabbit', 'cooked_rabbit', 'rotten_flesh'];
@@ -65,6 +66,25 @@ export const MOBS = {
   wandering_trader: { cat: 'misc', hp: 20, speed: 0.3, w: 0.6, h: 1.95, ai: 'villager', drops: [] },
   iron_golem: { cat: 'misc', hp: 100, speed: 0.25, dmg: 7, w: 1.4, h: 2.7, kbRes: 1, ai: 'golem', drops: [['iron_ingot', 3, 5], ['poppy', 0, 2]] },
   snow_golem: { cat: 'misc', hp: 4, speed: 0.2, w: 0.7, h: 1.9, ai: 'snow_golem', waterHurts: true, drops: [['snowball', 0, 15]] },
+  // ---- feature packs: add mob definitions inside your own region ----
+  // ==== pack:dimensions (Nether & End) ====
+  // ==== end pack:dimensions ====
+
+  // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+  // ==== end pack:enchanting ====
+
+  // ==== pack:structures (structures & loot) ====
+  // ==== end pack:structures ====
+
+  // ==== pack:trading (villager trading) ====
+  // ==== end pack:trading ====
+
+  // ==== pack:riding (riding & vehicles) ====
+  // ==== end pack:riding ====
+
+  // ==== pack:fishing (fish, fishing & ocean mobs) ====
+  // ==== end pack:fishing ====
+
 };
 
 const VILLAGER_PROFESSIONS = ['Farmer', 'Librarian', 'Cleric', 'Armorer', 'Butcher', 'Cartographer', 'Fisherman', 'Fletcher', 'Leatherworker', 'Mason', 'Shepherd', 'Toolsmith', 'Weaponsmith', 'Nitwit'];
@@ -78,6 +98,25 @@ function randomWool(r) {
 export function createMob(game, type, x, y, z, opts = {}) {
   if (!MOBS[type]) return null;
   if (type === 'slime' || type === 'magma_cube') return new Slime(game, type, x, y, z, opts);
+  // ---- feature packs: custom mob classes ----
+  // ==== pack:dimensions (Nether & End) ====
+  // ==== end pack:dimensions ====
+
+  // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+  // ==== end pack:enchanting ====
+
+  // ==== pack:structures (structures & loot) ====
+  // ==== end pack:structures ====
+
+  // ==== pack:trading (villager trading) ====
+  // ==== end pack:trading ====
+
+  // ==== pack:riding (riding & vehicles) ====
+  // ==== end pack:riding ====
+
+  // ==== pack:fishing (fish, fishing & ocean mobs) ====
+  // ==== end pack:fishing ====
+
   return new Mob(game, type, x, y, z, opts);
 }
 
@@ -233,7 +272,7 @@ export class Mob extends LivingEntity {
     if (killer) killer.statistics.mobsKilled++;
     if (this.mobType === 'creeper' && src.attacker && (src.attacker.mobType === 'skeleton' || src.attacker.mobType === 'stray')) g.dropItem(this.x, this.y + 0.5, this.z, new ItemStack('music_disc_13', 1));
     if (!g.rules.doMobLoot || this.baby) return;
-    const looting = killer ? enchantLevel(killer.inventory.selected(), 'Looting') : 0;
+    const looting = killer ? enchantLevel(killer.inventory.selected(), 'looting') : 0;
     const onFire = this.fireTicks > 0;
     for (const [name, mn, mx, o = {}] of this.def.drops) {
       if (o.player && !killer) continue;
@@ -1276,7 +1315,6 @@ function holding(p, names) {
   return (a && names.includes(a.item.name)) || (b && names.includes(b.item.name));
 }
 function wearsGold(p) { for (let i = 36; i < 40; i++) { const s = p.inventory.slots[i]; if (s && s.item.name.startsWith('golden_')) return true; } return false; }
-function enchantLevel(stack, name) { return stack && stack.tag && stack.tag.enchantments ? stack.tag.enchantments[name] || 0 : 0; }
 
 // ------------------------------------------------------------------ natural spawning
 const W = (list) => list.map(([t, w, min, max]) => ({ t, w, min, max }));
@@ -1319,6 +1357,26 @@ const MONSTERS = {
 };
 MONSTERS.ice_spikes = MONSTERS.snowy_plains; MONSTERS.snowy_taiga = MONSTERS.snowy_plains;
 for (const k of ['deep_ocean', 'warm_ocean', 'cold_ocean', 'frozen_ocean']) MONSTERS[k] = MONSTERS.ocean;
+
+// ---- feature packs: spawn list additions (CREATURES / WATER_CREATURES / MONSTERS by biome name) ----
+// ==== pack:dimensions (Nether & End) ====
+// ==== end pack:dimensions ====
+
+// ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+// ==== end pack:enchanting ====
+
+// ==== pack:structures (structures & loot) ====
+// ==== end pack:structures ====
+
+// ==== pack:trading (villager trading) ====
+// ==== end pack:trading ====
+
+// ==== pack:riding (riding & vehicles) ====
+// ==== end pack:riding ====
+
+// ==== pack:fishing (fish, fishing & ocean mobs) ====
+// ==== end pack:fishing ====
+
 
 function pickWeighted(list) {
   let total = 0;

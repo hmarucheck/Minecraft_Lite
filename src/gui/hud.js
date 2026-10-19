@@ -122,6 +122,25 @@ export function renderHud(gui, game, partial) {
     if (e.duration < 200 && Math.floor(e.duration / 4) % 2) fill(ctx, ex + 4, 5, 16, 16, 'rgba(255,255,255,0.4)');
     ex -= 25;
   }
+  // ---- feature packs: extra HUD elements (boss bars, jump bar, ...) ----
+  // ==== pack:dimensions (Nether & End) ====
+  // ==== end pack:dimensions ====
+
+  // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+  // ==== end pack:enchanting ====
+
+  // ==== pack:structures (structures & loot) ====
+  // ==== end pack:structures ====
+
+  // ==== pack:trading (villager trading) ====
+  // ==== end pack:trading ====
+
+  // ==== pack:riding (riding & vehicles) ====
+  // ==== end pack:riding ====
+
+  // ==== pack:fishing (fish, fishing & ocean mobs) ====
+  // ==== end pack:fishing ====
+
   // chat
   drawChat(gui, game);
   // debug

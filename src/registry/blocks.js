@@ -663,6 +663,26 @@ function redstoneWireModel(meta, nb) {
   return els;
 }
 
+// ---------------------------- feature packs ----------------------------
+// Each feature pack registers its blocks only inside its own marker region (keeps merges conflict-free).
+// ==== pack:dimensions (Nether & End) ====
+// ==== end pack:dimensions ====
+
+// ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+// ==== end pack:enchanting ====
+
+// ==== pack:structures (structures & loot) ====
+// ==== end pack:structures ====
+
+// ==== pack:trading (villager trading) ====
+// ==== end pack:trading ====
+
+// ==== pack:riding (riding & vehicles) ====
+// ==== end pack:riding ====
+
+// ==== pack:fishing (fish, fishing & ocean mobs) ====
+// ==== end pack:fishing ====
+
 // ---------------------------- derived lookup tables ----------------------------
 export const BLOCK_COUNT = BLOCKS.length;
 export const OPAQUE = new Uint8Array(BLOCK_COUNT);

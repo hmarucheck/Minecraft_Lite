@@ -261,6 +261,25 @@ item('debug_stick', { tab: 'op', maxStack: 1, rarity: 'epic', glint: true });
 item('barrier', { tab: 'op', rarity: 'epic' });
 item('light', { tab: 'op', displayName: 'Light' });
 
+// ---------------------------- feature packs ----------------------------
+// ==== pack:dimensions (Nether & End) ====
+// ==== end pack:dimensions ====
+
+// ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+// ==== end pack:enchanting ====
+
+// ==== pack:structures (structures & loot) ====
+// ==== end pack:structures ====
+
+// ==== pack:trading (villager trading) ====
+// ==== end pack:trading ====
+
+// ==== pack:riding (riding & vehicles) ====
+// ==== end pack:riding ====
+
+// ==== pack:fishing (fish, fishing & ocean mobs) ====
+// ==== end pack:fishing ====
+
 // fuel values for block items
 for (const it of ITEMS) {
   if (!it.block || it.fuel) continue;

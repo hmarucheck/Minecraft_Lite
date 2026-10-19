@@ -4,6 +4,7 @@ import { ITEM, itemOfBlock } from '../registry/items.js';
 import { ItemStack } from './itemstack.js';
 import { raycastBlocks, AABB } from '../entity/physics.js';
 import { Projectile } from '../entity/entity.js';
+import { enchantLevel } from './enchantments.js';
 import { FACE_DIRS } from '../core/util.js';
 
 const WATER = BLOCK.water.id, LAVA = BLOCK.lava.id;
@@ -83,10 +84,10 @@ export class Interaction {
     dmg *= 0.2 + cd * cd * 0.8;
     const crit = cd > 0.9 && p.fallDistance > 0 && !p.onGround && !p.onLadder && !p.inWater && !p.sprinting;
     if (crit) dmg *= 1.5;
-    let sharp = s && s.tag && s.tag.enchantments && s.tag.enchantments.Sharpness;
+    const sharp = enchantLevel(s, 'sharpness');
     if (sharp) dmg += 0.5 * sharp + 0.5;
     if (e.type === 'item_frame' || e.type === 'boat') { e.remove(); return; }
-    const kb = (p.sprinting && cd > 0.9 ? 1 : 0) + (s && s.tag && s.tag.enchantments && s.tag.enchantments.Knockback || 0);
+    const kb = (p.sprinting && cd > 0.9 ? 1 : 0) + enchantLevel(s, 'knockback');
     if (e.hurt({ type: 'player', attacker: p }, Math.max(0, dmg))) {
       p.lastHurtMob = e; p.lastHurtMobTime = p.age;
       const sin = Math.sin(p.yaw), cos = Math.cos(p.yaw);

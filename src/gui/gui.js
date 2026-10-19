@@ -2,6 +2,7 @@
 import { Font } from './font.js';
 import { drawTooltipBox, fill } from './draw.js';
 import { RARITY_COLOR } from '../registry/items.js';
+import { getEnchantments, enchantmentLine, isCurse } from '../game/enchantments.js';
 
 export class Gui {
   constructor(canvas, game) {
@@ -148,7 +149,7 @@ export class Gui {
       const nice = eff.split('_').map((s) => s[0].toUpperCase() + s.slice(1)).join(' ');
       lines.push({ text: dur > 1 ? `${nice}${amp ? ' ' + 'I'.repeat(amp + 1) : ''} (${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')})` : nice, color: eff === 'poison' || eff === 'instant_damage' || eff === 'slowness' || eff === 'weakness' ? 0xff5555 : 0x5555ff });
     } else if (it.kind === 'potion') lines.push({ text: 'No Effects', color: 0xa8a8a8 });
-    if (stack.tag && stack.tag.enchantments) for (const [e, l] of Object.entries(stack.tag.enchantments)) lines.push({ text: `${e} ${roman(l)}`, color: 0xa8a8a8 });
+    for (const [e, l] of Object.entries(getEnchantments(stack))) lines.push({ text: enchantmentLine(e, l), color: isCurse(e) ? 0xff5555 : 0xa8a8a8 });
     if (it.damage !== undefined && it.attackSpeed !== undefined) {
       lines.push({ text: '', color: 0 });
       lines.push({ text: 'When in Main Hand:', color: 0xa8a8a8 });

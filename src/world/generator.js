@@ -40,6 +40,9 @@ export class Generator {
     this.seed = seed >>> 0;
     this.type = opts.type || 'default';
     this.flat = this.type === 'flat' ? (FLAT_PRESETS[opts.flatPreset] || FLAT_PRESETS.classic_flat) : null;
+    this.dimension = 'overworld';
+    this.structures = null; // StructureManager (structures pack)
+    this.generateStructures = opts.generateStructures !== false;
     this.singleBiome = this.type === 'single_biome' ? BIOME[opts.biome || 'plains'] : null;
     this.scale = this.type === 'large_biomes' ? 4 : 1;
     this.amp = this.type === 'amplified' ? 2.2 : 1;
@@ -263,6 +266,8 @@ export class Generator {
     this.carveCaves(chunk, cols, heights, biomes);
     this.placeOres(chunk, biomes);
     this.decorate(chunk, heights, biomes);
+    // structures (villages, temples, ...) are placed by the StructureManager when the structures pack sets this.structures
+    if (this.structures) this.structures.generateChunk(chunk, this);
     for (let lz = 0; lz < 16; lz++) for (let lx = 0; lx < 16; lx++) chunk.updateHeightmap(lx, lz);
     chunk.generated = true;
   }
@@ -276,6 +281,7 @@ export class Generator {
       chunk.biomes[lz * 16 + lx] = BIOME[this.flat.biome].id;
     }
     this.blendColors(chunk);
+    if (this.structures) this.structures.generateChunk(chunk, this);
     for (let lz = 0; lz < 16; lz++) for (let lx = 0; lx < 16; lx++) chunk.updateHeightmap(lx, lz);
     chunk.generated = true;
   }

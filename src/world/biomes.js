@@ -47,4 +47,23 @@ biome('cold_ocean', { grass: 0x8eb971, foliage: 0x71a74d, water: 0x3d57d6, under
 biome('frozen_ocean', { grass: 0x80b497, foliage: 0x60a17b, water: 0x3938c9, underwater: 'gravel', filler: 'gravel', temp: 0, snow: true, ocean: true, frozen: true });
 biome('mushroom_fields', { grass: 0x55c93f, foliage: 0x2bbb0f, top: 'mycelium', trees: 1, treeTypes: ['huge_mushroom'], temp: 0.9, mushrooms: true, noMobs: true });
 
+// ---------------------------- feature packs ----------------------------
+// ==== pack:dimensions (Nether & End) ====
+// ==== end pack:dimensions ====
+
+// ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+// ==== end pack:enchanting ====
+
+// ==== pack:structures (structures & loot) ====
+// ==== end pack:structures ====
+
+// ==== pack:trading (villager trading) ====
+// ==== end pack:trading ====
+
+// ==== pack:riding (riding & vehicles) ====
+// ==== end pack:riding ====
+
+// ==== pack:fishing (fish, fishing & ocean mobs) ====
+// ==== end pack:fishing ====
+
 export function biomeById(id) { return BIOMES[id] || BIOMES[0]; }

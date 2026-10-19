@@ -168,6 +168,25 @@ export class EntityRenderer {
       const g = new THREE.Group(); g.add(obj); g.userData.billboard = obj;
       return g;
     }
+    // ---- feature packs: create() for new non-mob entity types ----
+    // ==== pack:dimensions (Nether & End) ====
+    // ==== end pack:dimensions ====
+
+    // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+    // ==== end pack:enchanting ====
+
+    // ==== pack:structures (structures & loot) ====
+    // ==== end pack:structures ====
+
+    // ==== pack:trading (villager trading) ====
+    // ==== end pack:trading ====
+
+    // ==== pack:riding (riding & vehicles) ====
+    // ==== end pack:riding ====
+
+    // ==== pack:fishing (fish, fishing & ocean mobs) ====
+    // ==== end pack:fishing ====
+
     if (t === 'player' || e.mobType) {
       const type = t === 'player' ? 'player' : e.mobType;
       const variant = e.variant || '';

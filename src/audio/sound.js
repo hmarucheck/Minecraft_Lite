@@ -278,6 +278,25 @@ export class Sound {
       case 'rabbit': this.tone(out, { type: 'sine', freq: 1500 * P, dur: 0.05, gain: 0.08 }); break;
       case 'blaze': this.noise(out, { dur: 0.6, type: 'bandpass', freq: 900, gain: 0.25 }); break;
       case 'phantom': this.tone(out, { type: 'sawtooth', freq: 600, freqEnd: 300, dur: 0.6, gain: 0.15, filter: ['bandpass', 1500, 6] }); break;
+      // ---- feature packs: mob sounds ----
+      // ==== pack:dimensions (Nether & End) ====
+      // ==== end pack:dimensions ====
+
+      // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+      // ==== end pack:enchanting ====
+
+      // ==== pack:structures (structures & loot) ====
+      // ==== end pack:structures ====
+
+      // ==== pack:trading (villager trading) ====
+      // ==== end pack:trading ====
+
+      // ==== pack:riding (riding & vehicles) ====
+      // ==== end pack:riding ====
+
+      // ==== pack:fishing (fish, fishing & ocean mobs) ====
+      // ==== end pack:fishing ====
+
       default: this.noise(out, { dur: 0.1, type: 'bandpass', freq: 1000, gain: 0.2 });
     }
   }

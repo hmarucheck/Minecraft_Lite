@@ -7,15 +7,12 @@ import { MOBS } from '../entity/mobs.js';
 import { ItemStack } from './itemstack.js';
 import { PrimedTnt, XpOrb } from '../entity/entity.js';
 import { MIN_Y, MAX_Y, titleCase } from '../core/util.js';
+import { ENCHANTMENTS, ENCHANTMENT_IDS, canEnchant, addEnchantment, enchantmentLine, getEnchantments, exclusive } from './enchantments.js';
 
 const MODES = ['survival', 'creative', 'adventure', 'spectator'];
 const MODE_NAMES = ['Survival Mode', 'Creative Mode', 'Adventure Mode', 'Spectator Mode'];
 const DIFFS = ['peaceful', 'easy', 'normal', 'hard'];
-const ENCHANTS = ['sharpness', 'smite', 'bane_of_arthropods', 'knockback', 'fire_aspect', 'looting', 'sweeping_edge', 'efficiency', 'silk_touch', 'unbreaking',
-  'fortune', 'power', 'punch', 'flame', 'infinity', 'luck_of_the_sea', 'lure', 'mending', 'protection', 'fire_protection', 'feather_falling', 'blast_protection',
-  'projectile_protection', 'respiration', 'aqua_affinity', 'thorns', 'depth_strider', 'frost_walker', 'loyalty', 'impaling', 'riptide', 'channeling', 'multishot',
-  'quick_charge', 'piercing', 'soul_speed', 'swift_sneak'];
-const ENCHANT_MAX = { sharpness: 5, smite: 5, bane_of_arthropods: 5, knockback: 2, fire_aspect: 2, looting: 3, sweeping_edge: 3, efficiency: 5, silk_touch: 1, unbreaking: 3, fortune: 3, power: 5, punch: 2, flame: 1, infinity: 1, luck_of_the_sea: 3, lure: 3, mending: 1, protection: 4, fire_protection: 4, feather_falling: 4, blast_protection: 4, projectile_protection: 4, respiration: 3, aqua_affinity: 1, thorns: 3, depth_strider: 3, frost_walker: 2, loyalty: 3, impaling: 5, riptide: 3, channeling: 1, multishot: 1, quick_charge: 3, piercing: 4, soul_speed: 3, swift_sneak: 3 };
+const ENCHANTS = ENCHANTMENT_IDS;
 const PARTICLES = ['smoke', 'large_smoke', 'flame', 'soul_fire_flame', 'lava', 'bubble', 'crit', 'heart', 'angry_villager', 'happy_villager', 'note', 'portal', 'dust', 'dripping_water', 'dripping_lava', 'splash', 'explosion', 'poof', 'effect', 'campfire_cosy_smoke', 'sweep_attack', 'rain', 'snowflake'];
 const PARTICLE_MAP = { soul_fire_flame: 'soul_flame', dust: 'redstone', dripping_water: 'drip_water', dripping_lava: 'drip_lava', campfire_cosy_smoke: 'campfire_smoke', sweep_attack: 'sweep', snowflake: 'snow', explosion_emitter: 'explosion' };
 const SUMMONABLE = [...Object.keys(MOBS), 'tnt', 'lightning_bolt', 'experience_orb', 'item'];
@@ -497,22 +494,24 @@ export class Commands {
   cmd_enchant(args) {
     const list = this.targets(args[0]);
     const en = stripNs(args[1]);
-    if (!ENCHANTS.includes(en)) fail(`Can't find element 'minecraft:${en}' of type 'minecraft:enchantment'`);
+    const E = ENCHANTMENTS[en];
+    if (!E) fail(`Can't find element 'minecraft:${en}' of type 'minecraft:enchantment'`);
     const lvl = args[2] !== undefined ? this.int(args[2], 1) : 1;
-    if (lvl > ENCHANT_MAX[en]) fail(`${lvl} is higher than the maximum level of ${ENCHANT_MAX[en]} supported by that enchantment`);
+    if (lvl > E.maxLevel) fail(`${lvl} is higher than the maximum level of ${E.maxLevel} supported by that enchantment`);
     let n = 0;
     for (const e of list) {
       if (!e.isPlayer) continue;
       const s = e.inventory.selected();
       if (!s) { if (list.length === 1) fail(`${e.name} isn't holding any item`); continue; }
-      if (s.item.maxStack > 1 && s.item.kind !== 'book') { if (list.length === 1) fail(`${s.item.displayName} cannot support that enchantment`); continue; }
-      s.tag = s.tag || {};
-      s.tag.enchantments = s.tag.enchantments || {};
-      s.tag.enchantments[titleCase(en)] = lvl;
+      if (!canEnchant(en, s.item)) { if (list.length === 1) fail(`${s.item.displayName} cannot support that enchantment`); continue; }
+      const cur = getEnchantments(s);
+      const clash = Object.keys(cur).find((k) => k !== en && exclusive(k, en));
+      if (clash) { if (list.length === 1) fail(`${enchantmentLine(clash, cur[clash])} can't be combined with ${E.name}`); continue; }
+      addEnchantment(s, en, lvl);
       n++;
     }
     if (!n) fail('No entity was found');
-    this.feedback(`Applied enchantment ${titleCase(en)} ${roman(lvl)} to ${list.length === 1 ? this.nameOf(list[0]) + '\'s item' : n + ' entities'}`);
+    this.feedback(`Applied enchantment ${enchantmentLine(en, lvl)} to ${list.length === 1 ? this.nameOf(list[0]) + '\'s item' : n + ' entities'}`);
   }
   cmd_seed() { const i = this.game.info; this.out(`Seed: [${i.seedText && /^-?\d+$/.test(i.seedText) ? i.seedText : i.seed}]`); }
   cmd_spawnpoint(args) {
@@ -616,6 +615,25 @@ export class Commands {
   cmd_ride() { fail('Riding is not available in Minecraft_Lite yet'); }
   cmd_trigger() { fail('Invalid trigger objective name'); }
 
+  // ---- feature packs: add cmd_<name>(args) methods inside your own region ----
+  // ==== pack:dimensions (Nether & End) ====
+  // ==== end pack:dimensions ====
+
+  // ==== pack:enchanting (enchanting, anvil, brewing & workstations) ====
+  // ==== end pack:enchanting ====
+
+  // ==== pack:structures (structures & loot) ====
+  // ==== end pack:structures ====
+
+  // ==== pack:trading (villager trading) ====
+  // ==== end pack:trading ====
+
+  // ==== pack:riding (riding & vehicles) ====
+  // ==== end pack:riding ====
+
+  // ==== pack:fishing (fish, fishing & ocean mobs) ====
+  // ==== end pack:fishing ====
+
   expand(text) {
     return text.replace(/@[psaer](\[[^\]]*\])?/g, (m) => { try { return this.targets(m, false, true).map((e) => this.nameOf(e)).join(', '); } catch { return m; } });
   }
@@ -672,7 +690,6 @@ function entityType(e) {
   if (e.type === 'tnt') return 'tnt';
   return e.type;
 }
-function roman(n) { return ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][n] || String(n); }
 // minimal JSON text component -> formatted string
 function jsonText(raw) {
   const s = raw.trim();

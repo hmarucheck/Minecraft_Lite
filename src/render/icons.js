@@ -1,5 +1,6 @@
 // Item icons: 3D isometric block icons rendered with WebGL into a sheet, plus 2D sprites for items.
 import * as THREE from 'three';
+import { hasEnchantments } from '../game/enchantments.js';
 import { ITEMS } from '../registry/items.js';
 import { BLOCK } from '../registry/blocks.js';
 import { paint } from '../textures/index.js';
@@ -117,7 +118,7 @@ export class Icons {
     ctx.imageSmoothingEnabled = e.smooth;
     ctx.drawImage(e.canvas, e.sx, e.sy, e.size, e.size, x, y, size, size);
     ctx.imageSmoothingEnabled = prev;
-    if ((item.glint || (stack && stack.tag && stack.tag.enchantments)) && size >= 8) {
+    if ((item.glint || hasEnchantments(stack)) && size >= 8) {
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       const t = performance.now() / 1000;
