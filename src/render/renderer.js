@@ -35,7 +35,9 @@ export class Renderer {
     this.opaqueMat = new THREE.ShaderMaterial({ glslVersion: THREE.GLSL3, vertexShader: BLOCK_VERT, fragmentShader: BLOCK_FRAG, uniforms: this.uniforms });
     this.transUniforms = { ...this.uniforms, uAlphaTest: { value: 0.01 } };
     this.transMat = new THREE.ShaderMaterial({ glslVersion: THREE.GLSL3, vertexShader: BLOCK_VERT, fragmentShader: BLOCK_FRAG, uniforms: this.transUniforms, transparent: true, side: THREE.DoubleSide, depthWrite: true });
-    this.sky = new Sky(this.scene);
+    // the sky is drawn in its own pass before the world, so blocks always cover the sun, moon and stars
+    this.skyScene = new THREE.Scene();
+    this.sky = new Sky(this.skyScene);
     this.clouds = new Clouds(this.scene);
     this.worldGroup = new THREE.Group();
     this.scene.add(this.worldGroup);
@@ -255,6 +257,7 @@ export class Renderer {
     this.gl.clear(true, true, true);
     this.camera.far = Math.max(400, this.renderDistance * 16 * 1.8 + 200);
     this.camera.updateProjectionMatrix();
+    this.gl.render(this.skyScene, this.camera);
     this.gl.render(this.scene, this.camera);
     for (const [scene, camera, clearDepth] of extraScenes) {
       if (clearDepth) this.gl.clearDepth();

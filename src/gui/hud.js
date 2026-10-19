@@ -153,6 +153,12 @@ export function renderHud(gui, game, partial) {
     fill(ctx, W / 2 - w / 2, 10, w, 9, 'rgba(255,255,255,0.13)');
     f.draw(ctx, name, Math.floor(W / 2 - w / 2 + 2), 11, 0xffffff);
   }
+  // mouse not grabbed yet (browsers need a click before they allow pointer lock)
+  if (!game.input.locked && !gui.screen && !game.touchControls && game.loading && game.loading.done) {
+    const msg = 'Click to play';
+    fill(ctx, Math.floor(W / 2 - f.width(msg) / 2) - 4, Math.floor(H / 2) + 12, f.width(msg) + 8, 12, 'rgba(0,0,0,0.5)');
+    f.drawCentered(ctx, msg, Math.floor(W / 2), Math.floor(H / 2) + 14, 0xffffff);
+  }
   // autosave indicator
   if (game.savingIndicator && performance.now() - game.savingIndicator < 1500 && game.options.get('autosaveIndicator')) f.draw(ctx, 'Saving world', W - f.width('Saving world') - 4, H - 12, 0xa0a0a0);
 }

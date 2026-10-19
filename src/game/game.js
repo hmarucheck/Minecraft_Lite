@@ -554,7 +554,7 @@ export class Game {
     if (this.inWorld && !this.player.dead) this.input.requestLock();
   }
   onPointerUnlocked() {
-    if (this.inWorld && !this.gui.screen && !(this.loading && !this.loading.done)) this.gui.setScreen(new PauseScreen());
+    if (this.inWorld && !this.gui.screen && !(this.loading && !this.loading.done) && !(this.player && this.player.dead)) this.gui.setScreen(new PauseScreen());
   }
   openInventory() {
     if (this.player.gameMode === 1) this.gui.setScreen(new CreativeScreen(this.player));

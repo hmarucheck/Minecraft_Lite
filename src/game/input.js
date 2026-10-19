@@ -38,7 +38,8 @@ export class Input {
     this.down = new Set();
     this.bindings = { ...DEFAULT_BINDINGS };
     this.locked = false;
-    this.fallbackLook = false;
+    this.fallbackLook = false; // only used when the browser has no pointer lock API
+    this.needClick = false; // pointer lock was refused; the next click grabs the mouse
     this.attackPressed = false; this.usePressed = false; this.pickPressed = false;
     this.lastX = null; this.lastY = null;
     this.lastForwardTap = 0;
@@ -49,19 +50,27 @@ export class Input {
   get attackDown() { return this.down.has(this.bindings.attack); }
   get useDown() { return this.down.has(this.bindings.use); }
 
+  // Grab the mouse like Minecraft. Browsers only allow this during a click/key press, so when it is
+  // refused the game shows "Click to play" and the next click on the world grabs the mouse.
   requestLock() {
     if (this.locked) return;
     const el = this.el;
+    if (!el.requestPointerLock) { this.fallbackLook = true; this.locked = true; return; } // no pointer lock API at all
+    const fail = () => { if (!document.pointerLockElement) this.needClick = true; };
     try {
-      const r = el.requestPointerLock && el.requestPointerLock();
-      if (r && r.catch) r.catch(() => { this.fallbackLook = true; this.locked = true; });
-    } catch { this.fallbackLook = true; this.locked = true; }
-    // in some sandboxes pointer lock silently fails: switch to fallback after a moment
-    setTimeout(() => { if (!document.pointerLockElement && !this.locked && !this.game.gui.screen) { this.fallbackLook = true; this.locked = true; } }, 250);
+      const r = el.requestPointerLock({ unadjustedMovement: true });
+      if (r && r.catch) {
+        r.catch((e) => {
+          // raw mouse input is not supported everywhere: retry with normal pointer lock
+          if (e && e.name === 'NotSupportedError') { try { const r2 = el.requestPointerLock(); if (r2 && r2.catch) r2.catch(fail); } catch { fail(); } }
+          else fail();
+        });
+      }
+    } catch { fail(); }
   }
   releaseLock() {
     if (document.pointerLockElement) document.exitPointerLock();
-    this.locked = false;
+    if (!this.fallbackLook) this.locked = false;
   }
 
   listeners() {
@@ -69,10 +78,10 @@ export class Input {
     document.addEventListener('pointerlockchange', () => {
       const was = this.locked;
       this.locked = document.pointerLockElement === el;
-      if (this.locked) this.fallbackLook = false;
-      if (was && !this.locked && !this.fallbackLook) this.game.onPointerUnlocked();
+      if (this.locked) { this.fallbackLook = false; this.needClick = false; }
+      if (was && !this.locked) this.game.onPointerUnlocked();
     });
-    document.addEventListener('pointerlockerror', () => { this.fallbackLook = true; this.locked = true; });
+    document.addEventListener('pointerlockerror', () => { this.needClick = true; });
     window.addEventListener('keydown', (e) => this.onKey(e, true));
     window.addEventListener('keyup', (e) => this.onKey(e, false));
     window.addEventListener('blur', () => { this.down.clear(); });
